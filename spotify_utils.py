@@ -19,12 +19,14 @@ def get_access_token():
             "client_secret": SPOTIFY_CLIENT_SECRET,
         },
     )
-    try:
-        return auth_response.json()["access_token"]
-    except KeyError:
-        print("Spotify Auth Error:", auth_response.status_code)
-        print("Response Text:", auth_response.text)
-        raise
+
+    data = auth_response.json()
+    print("Auth response JSON:", data)
+    print("Status code:", auth_response.status_code)
+    print("Response Text:", auth_response.text)
+
+    auth_response.raise_for_status()  # optional but helpful
+    return auth_response.json()["access_token"]
 
 def make_spotify_request(method, endpoint, token, **kwargs):
     headers = {"Authorization": f"Bearer {token}"}
