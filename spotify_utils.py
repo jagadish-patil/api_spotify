@@ -11,6 +11,8 @@ SPOTIFY_REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN")
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 
 def get_access_token():
+    print("Client ID:", os.getenv("SPOTIFY_CLIENT_ID"))
+    print("Client SECRET:", os.getenv("SPOTIFY_CLIENT_SECRET"))
     if not SPOTIFY_CLIENT_ID or not SPOTIFY_CLIENT_SECRET:
         raise Exception("Missing SPOTIFY_CLIENT_ID or SPOTIFY_CLIENT_SECRET")
 
