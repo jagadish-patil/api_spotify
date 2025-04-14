@@ -1,7 +1,11 @@
+import os
+
 from flask import Flask, jsonify, request
 from spotify_utils import get_access_token, make_spotify_request
 
 app = Flask(__name__)
+
+port = int(os.environ.get("PORT", 5000))  # fallback for local dev
 
 @app.route("/spotify/top-tracks", methods=["GET"])
 def top_tracks():
@@ -49,4 +53,4 @@ def pause_song():
     return jsonify({"status": "paused"})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=port, debug=True)
