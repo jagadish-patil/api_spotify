@@ -2,8 +2,10 @@ import os
 
 from flask import Flask, jsonify, request
 from spotify_utils import get_access_token, make_spotify_request
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 port = int(os.environ.get("PORT", 5000))  # fallback for local dev
 
