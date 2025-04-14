@@ -1,5 +1,6 @@
 import os
 import requests
+import base64
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,22 +11,33 @@ SPOTIFY_REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN")
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 
 def get_access_token():
+    if not SPOTIFY_CLIENT_ID or not SPOTIFY_CLIENT_SECRET:
+        raise Exception("Missing SPOTIFY_CLIENT_ID or SPOTIFY_CLIENT_SECRET")
+
+    # Build the Base64 encoded string
+    auth_str = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}"
+    b64_auth_str = base64.b64encode(auth_str.encode()).decode()
+
+    headers = {
+        "Authorization": f"Basic {b64_auth_str}",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    data = {
+        "grant_type": "client_credentials"
+    }
+
     auth_response = requests.post(
-        TOKEN_URL,
-        data={
-            "grant_type": "refresh_token",
-            "refresh_token": SPOTIFY_REFRESH_TOKEN,
-            "client_id": SPOTIFY_CLIENT_ID,
-            "client_secret": SPOTIFY_CLIENT_SECRET,
-        },
+        "https://accounts.spotify.com/api/token",
+        headers=headers,
+        data=data
     )
 
-    data = auth_response.json()
-    print("Auth response JSON:", data)
-    print("Status code:", auth_response.status_code)
-    print("Response Text:", auth_response.text)
+    print("Spotify auth status:", auth_response.status_code)
+    print("Response:", auth_response.text)
 
-    auth_response.raise_for_status()  # optional but helpful
+    auth_response.raise_for_status()  # will raise error if not 2xx
+
     return auth_response.json()["access_token"]
 
 def make_spotify_request(method, endpoint, token, **kwargs):
